@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 # Reproducible Research: Peer Assessment 1
 
 
@@ -25,15 +28,17 @@ Here is a histogram of the total number of steps taken each day:
 ```{r histogram steps per day}
 library(plyr)
 steps.day <- ddply(tidy, .(date), summarize, sum=sum(steps))
-hist(steps.day$sum, xlab = "number of steps taken each day", ylab = "number of days within the 2-month-range", main = "Histogram (ignoring missing values)")
+hist(steps.day$sum, breaks = 20, xlab = "number of steps taken each day", ylab = "number of days within the 2-month-range", main = "Histogram (ignoring missing values)")
 ```
 
-Here is the mean and median total number of steps taken per day:
+Here is the mean and median of the total number of steps taken per day:
 
 ```{r mean and median}
-steps.day.mean <- ddply(tidy, .(date), summarize, mean=mean(steps), median=median(steps))
-steps.day.mean
+steps.day.mean <- mean(steps.day$sum, na.rm = TRUE)
+steps.day.median <- median(steps.day$sum, na.rm = TRUE)
 ```
+
+The total number of steps taken per day has a mean of `r steps.day.mean` and a median of `r steps.day.median`.
 
 
 ## What is the average daily activity pattern?
@@ -75,19 +80,22 @@ Here is a histogram of the total number of steps taken each day (missing values 
 ```{r histogram steps per day2}
 library(plyr)
 steps.day2 <- ddply(tidy2, .(date), summarize, sum=sum(steps))
-hist(steps.day2$sum, xlab = "number of steps taken each day", ylab = "number of days within the 2-month-range", main = "Histogram (missing values replaced by 5-min average)")
+hist(steps.day2$sum, breaks = 20, xlab = "number of steps taken each day", ylab = "number of days within the 2-month-range", main = "Histogram (missing values replaced by 5-min average)")
 ```
 
 Here is the mean and median total number of steps taken per day (missing values replaced by mean for that 5-min interval)
 
 ```{r mean and median2}
-steps.day.mean2 <- ddply(tidy2, .(date), summarize, mean=mean(steps), median=median(steps))
-steps.day.mean2
+steps.day.mean2 <- mean(steps.day2$sum, na.rm = TRUE)
+steps.day.median2 <- median(steps.day2$sum, na.rm = TRUE)
 ```
 
+The total number of steps taken per day has a mean of `r steps.day.mean2` and a median of `r steps.day.median2`.
+
 The NA's affected only eight days, but those entirely (8 time 288 equals the total of 2304 missing values). Therefore, the mean over a day was not useful to replace the NA's. Consequently, only those 8 days were affected, and all of them received identical values, i.e. for each of the 288 5-min intervals the average of the 53 valid days.  
-In the histogram, the middle bar grew by 8.  
-In the mean/median table, these 8 days received identical mean/median replacing the previous NAs; the other 53 days remaining unchanged.
+In the histogram, the middle bar grew by 8 (from 10 to 18).
+The mean is exactly the same as before imputing missing values, as the mean was used to replace the previous NAs.
+The median is now equal to the mean, not being an integer number any more, as there are now 8 days with this mean number of steps per day.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
